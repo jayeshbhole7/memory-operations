@@ -4,38 +4,38 @@
 using namespace std;
 
 
-__global__ void memory_read_write(int *a,int *b,int n){
+__global__ void memory_read_write(int* input,int* output,int n){
 }
 
 int main(){
 
-    const int n =1024;
+    const int s_of_data_processed =1024;
 
-    int a[n],b[n];
+    int input[s_of_data_processed],output[s_of_data_processed];
 
-    for(int i=0;i<n;i++) a[i]=i;
+    for(int i=0;i<s_of_data_processed;i++) input[i]=i;
 
-    int *d_a,*d_b;
+    int *d_input,*d_output;
 
-    if(cudaMalloc(&d_a,n*sizeof(int))!=cudaSuccess){
+    if(cudaMalloc(&d_input,s_of_data_processed*sizeof(int))!=cudaSuccess){
         cerr<<"cuda malloc fails for d_a\n";
         return -1;
     }
-    if(cudaMalloc(&d_a,n*sizeof(int))!=cudaSuccess){
+    if(cudaMalloc(&d_output,s_of_data_processed*sizeof(int))!=cudaSuccess){
         cerr<<"cuda malloc fails for d_b\n";
         return -1;
     }
 
-    cudaMemcpy(d_a,a,n*sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_input,input,s_of_data_processed*sizeof(int), cudaMemcpyHostToDevice);
     
-    memory_read_write<<<n/256,256>>>(d_a,d_b,n);
+    memory_read_write<<<s_of_data_processed/256,256>>>(d_input,d_output,s_of_data_processed);
 
-    cudaMemcpy(b,d_b,n*sizeof(int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(output,d_output,s_of_data_processed*sizeof(int), cudaMemcpyDeviceToHost);
 
-    for(int i=0;i<n;i++) cout<<b[i]<<" ";
+    for(int i=0;i<s_of_data_processed;i++) cout<<output[i]<<" ";
 
-    cudaFree(d_a);
-    cudaFree(d_b);
+    cudaFree(d_input);
+    cudaFree(d_output);
 
     return 0;
 }
