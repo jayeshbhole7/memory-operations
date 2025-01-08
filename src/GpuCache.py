@@ -10,7 +10,7 @@ class Cache:
             return "Collide"
         
         else:
-            if (self.cache)> self.size:
+            if len(self.cache)>= self.size:
                 self.cache.pop(0)
             self.cache.append(address)
             return "Pass"

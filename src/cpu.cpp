@@ -2,7 +2,11 @@
 #include <chrono>
 using namespace std;
 
-void cpu_memory_read_write(int* input, int* output,int arr_io){}
+void cpu_memory_read_write(const int* input, int* output,int n){
+    for(int i=0;i<n;i++){
+        output[i] = input[i]*2;
+    }
+}
 
 int main(){
     const int arr_io=1024;

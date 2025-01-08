@@ -5,34 +5,32 @@ using namespace std;
 
 
 __global__ void memory_read_write(int* input,int* output,int n){
+    int index = threadIdx.x + blockIdx.x*blockDim.x;
+    if(index < n){
+        output[index] = input[index]*2; //read_write_memory
+    }
 }
 
 int main(){
 
     const int s_of_data_processed =1024;
 
-    int input[s_of_data_processed],output[s_of_data_processed];
+    int h_input[s_of_data_processed],h_output[s_of_data_processed];
 
-    for(int i=0;i<s_of_data_processed;i++) input[i]=i;
+    for(int i=0;i<s_of_data_processed;i++) h_input[i]=i;
 
-    int *d_input,*d_output;
+    int* d_input,*d_output;
+    cudaMalloc(&d_input,s_of_data_processed*sizeof(int));
+    cudaMalloc(&d_output,s_of_data_processed*sizeof(int));
 
-    if(cudaMalloc(&d_input,s_of_data_processed*sizeof(int))!=cudaSuccess){
-        cerr<<"cuda malloc fails for d_a\n";
-        return -1;
-    }
-    if(cudaMalloc(&d_output,s_of_data_processed*sizeof(int))!=cudaSuccess){
-        cerr<<"cuda malloc fails for d_b\n";
-        return -1;
-    }
 
-    cudaMemcpy(d_input,input,s_of_data_processed*sizeof(int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_input,h_input,s_of_data_processed*sizeof(int), cudaMemcpyHostToDevice);
     
     memory_read_write<<<s_of_data_processed/256,256>>>(d_input,d_output,s_of_data_processed);
 
-    cudaMemcpy(output,d_output,s_of_data_processed*sizeof(int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_output,d_output,s_of_data_processed*sizeof(int), cudaMemcpyDeviceToHost);
 
-    for(int i=0;i<s_of_data_processed;i++) cout<<output[i]<<" ";
+    for(int i=0;i<s_of_data_processed;i++) cout<<h_output[i]<<" ";
 
     cudaFree(d_input);
     cudaFree(d_output);

@@ -2,8 +2,13 @@
 #include <cuda_runtime.h>
 #include <cassert>
 
-__global__ void test_kernal(int* input,int* output,int arr_io){
 
+
+__global__ void test_kernal(int* input,int* output,int n){
+    int index = threadIdx.x + blockIdx.x * blockDim.x;
+    if(index<n){
+        output[index] = input[index]*2;
+    }
 }
 
 void test_memory_read_write(){
@@ -21,7 +26,7 @@ void test_memory_read_write(){
 
     test_kernal<<<s_of_memory_allotted/256, 256>>>(d_input,d_output,s_of_memory_allotted);
 
-    cudaMemcpy(h_output, h_input, s_of_memory_allotted* sizeof(int),cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_output, d_output, s_of_memory_allotted* sizeof(int),cudaMemcpyDeviceToHost);
 
     for(int i=0;i<s_of_memory_allotted; i++) assert(h_output[i]== h_input[i]*2);
 
