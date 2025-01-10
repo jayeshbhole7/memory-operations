@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 def recordings(coalesced_times, scattered_times):
-    threads=[32,64,128,256]
+    threads=[32,64,128,256,512,1024]
     plt.plot(threads, coalesced_times, label="Coalesced")
     plt.plot(threads, coalesced_times, label="Scattered")
     plt.xlabel("threads")
